@@ -16,6 +16,7 @@ class FlowerPieChartPainter extends CustomPainter {
       drawLeafPetal(canvas, size, petalPaint, angle);
     }
 
+    // drawLeafPetal(canvas, size, petalPaint, -90);
     // Draw the center pentagon on top of the petals
     drawCenterPentagon(canvas, size);
 
@@ -50,13 +51,14 @@ class FlowerPieChartPainter extends CustomPainter {
       }
     }
     pentagonPath.close();
+
     // Paint for the white border
     Paint borderPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8.0;
 
-    // Draw the petal's white border
+    // Draw the pentagon's white border
     canvas.drawPath(pentagonPath, borderPaint);
     canvas.drawPath(pentagonPath, pentagonPaint);
   }
@@ -66,10 +68,13 @@ class FlowerPieChartPainter extends CustomPainter {
     double centerX = size.width / 2;
     double centerY = size.height / 2;
     double pentagonRadius = 40; // Same radius as the pentagon
+    double petalOffset = 15; // Move petal start inward
 
-    // Calculate the tip of the pentagon where the petal will start
-    double startX = centerX + pentagonRadius * cos(degreeToRadians(angle));
-    double startY = centerY + pentagonRadius * sin(degreeToRadians(angle));
+    // Calculate the inward position of the petal to start drawing
+    double startX =
+        centerX + (pentagonRadius - petalOffset) * cos(degreeToRadians(angle));
+    double startY =
+        centerY + (pentagonRadius - petalOffset) * sin(degreeToRadians(angle));
 
     // Move canvas to the tip of the pentagon and rotate the petal
     canvas.save();
@@ -79,9 +84,11 @@ class FlowerPieChartPainter extends CustomPainter {
 
     // Draw the petal behind the pentagon
     Path path = Path();
-    path.moveTo(0, 0); // Start from the pentagon's tip
-    path.quadraticBezierTo(80, -60, 0, -120); // Right side curve of the petal
-    path.quadraticBezierTo(-80, -60, 0, 0); // Left side curve of the petal
+    path.moveTo(0, 0); // Start from the adjusted position
+
+    // Adjust control points for larger petals
+    path.quadraticBezierTo(100, -80, 0, -150); // Right side curve of the petal
+    path.quadraticBezierTo(-100, -80, 0, 0); // Left side curve of the petal
     path.close();
 
     // Paint for the white border
@@ -106,8 +113,8 @@ class FlowerPieChartPainter extends CustomPainter {
         text: '00',
         style: TextStyle(
           color: Colors.black,
-          fontSize: 40,
-          fontWeight: FontWeight.bold,
+          fontSize: 32,
+          // fontWeight: FontWeight.bold,
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -121,10 +128,10 @@ class FlowerPieChartPainter extends CustomPainter {
 
   void _drawIconInPetalWithBackground(Canvas canvas, Size size, IconData icon,
       double angle, Color backgroundColor) {
-    const iconSize = 30.0;
+    const iconSize = 20.0;
     final double radius =
-        size.width / 3.5; // Position the icon within each petal
-    const double backgroundRadius = 30.0; // Radius for the background circle
+        size.width / 4.0; // Position the icon within each petal
+    const double backgroundRadius = 20.0; // Radius for the background circle
 
     // Calculate icon position based on angle
     final x = size.width / 2 + radius * cos(degreeToRadians(angle));
@@ -161,46 +168,3 @@ class FlowerPieChartPainter extends CustomPainter {
     return false;
   }
 }
-
-
-
-
-
-/**
- *   void drawStatusBox(Canvas canvas, Size size) {
-    // Draw time/status rectangle box on top-right
-    Paint boxPaint = Paint()..color = Colors.green.shade100;
-
-    Rect rect = Rect.fromLTWH(size.width - 120, 20, 100, 50);
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(8)), boxPaint);
-
-    // Time text
-    TextPainter timePainter = TextPainter(
-      text: const TextSpan(
-        text: '12:00 AM',
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    timePainter.layout();
-    timePainter.paint(canvas, Offset(size.width - 110, 30));
-
-    // Status text
-    TextPainter statusPainter = TextPainter(
-      text: const TextSpan(
-        text: 'Status: OK!',
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.black,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    statusPainter.layout();
-    statusPainter.paint(canvas, Offset(size.width - 110, 50));
-  }
- */
