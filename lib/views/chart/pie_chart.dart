@@ -8,25 +8,23 @@ class FlowerPieChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = Colors.grey.shade200;
 
-    // Define the angles to position the petals around the pentagon
     List<double> angles = [-90, -18, 54, 126, 198];
 
-    // Draw each petal behind the pentagon
     for (double angle in angles) {
       drawLeafPetal(canvas, size, petalPaint, angle);
     }
-
-    // drawLeafPetal(canvas, size, petalPaint, -90);
-    // Draw the center pentagon on top of the petals
+    
     drawCenterPentagon(canvas, size);
 
-    // Draw icons in petals (with varying angles)
     for (double angle in angles) {
       _drawIconInPetalWithBackground(
-          canvas, size, Icons.alarm, angle, Colors.orangeAccent.shade100);
+          canvas, size, Icons.alarm, angle, Colors.grey.shade300);
     }
 
-    // Draw the center text ("00")
+    _drawIconInPetalWithBackground(
+        canvas, size, Icons.alarm, 198, Colors.orange);
+
+    
     drawCenterText(canvas, size);
   }
 
@@ -37,7 +35,7 @@ class FlowerPieChartPainter extends CustomPainter {
 
     double centerX = size.width / 2;
     double centerY = size.height / 2;
-    double radius = 40; // Adjust the size of the pentagon
+    double radius = 40; 
 
     Path pentagonPath = Path();
     for (int i = 0; i < 5; i++) {
@@ -52,69 +50,74 @@ class FlowerPieChartPainter extends CustomPainter {
     }
     pentagonPath.close();
 
-    // Paint for the white border
     Paint borderPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8.0;
 
-    // Draw the pentagon's white border
     canvas.drawPath(pentagonPath, borderPaint);
     canvas.drawPath(pentagonPath, pentagonPaint);
   }
 
   void drawLeafPetal(Canvas canvas, Size size, Paint paint, double angle) {
-    // Calculate the pentagon's outer tip coordinates to attach the petal
     double centerX = size.width / 2;
     double centerY = size.height / 2;
-    double pentagonRadius = 40; // Same radius as the pentagon
-    double petalOffset = 15; // Move petal start inward
+    double pentagonRadius = 40; 
+    double petalOffset = 15; 
 
-    // Calculate the inward position of the petal to start drawing
     double startX =
         centerX + (pentagonRadius - petalOffset) * cos(degreeToRadians(angle));
     double startY =
         centerY + (pentagonRadius - petalOffset) * sin(degreeToRadians(angle));
 
-    // Move canvas to the tip of the pentagon and rotate the petal
     canvas.save();
     canvas.translate(startX, startY);
     canvas.rotate(
-        degreeToRadians(angle + 90)); // Rotate to align with the pentagon's tip
+        degreeToRadians(angle + 90)); 
 
-    // Draw the petal behind the pentagon
     Path path = Path();
-    path.moveTo(0, 0); // Start from the adjusted position
+    path.moveTo(0, 0); 
 
-    // Adjust control points for larger petals
-    path.quadraticBezierTo(100, -80, 0, -150); // Right side curve of the petal
-    path.quadraticBezierTo(-100, -80, 0, 0); // Left side curve of the petal
+    path.quadraticBezierTo(100, -80, 0, -150); 
+    path.quadraticBezierTo(-100, -80, 0, 0); 
     path.close();
 
-    // Paint for the white border
     Paint borderPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8.0;
 
-    // Draw the petal's white border
     canvas.drawPath(path, borderPaint);
 
-    // Draw the petal itself using the provided paint
     canvas.drawPath(path, paint);
 
-    canvas.restore(); // Restore the canvas to avoid affecting other drawings
+    Path rightHalfPath = Path();
+    rightHalfPath.moveTo(0, 0);
+    rightHalfPath.quadraticBezierTo(100, -80, 0, -150); 
+    rightHalfPath.quadraticBezierTo(0, 0, 0, 0); 
+    rightHalfPath.lineTo(0, 0); 
+    rightHalfPath.close();
+
+    Paint rightHalfPaint = Paint()
+      ..color = Colors.grey.shade300
+      ..style = PaintingStyle.fill;
+
+   
+    canvas.drawPath(rightHalfPath, rightHalfPaint);
+
+   
+    canvas.restore();
   }
 
   void drawCenterText(Canvas canvas, Size size) {
-    // Center Text ("00")
+    
     TextPainter textPainter = TextPainter(
       text: const TextSpan(
         text: '00',
         style: TextStyle(
           color: Colors.black,
           fontSize: 32,
-          // fontWeight: FontWeight.bold,
+          
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -130,27 +133,32 @@ class FlowerPieChartPainter extends CustomPainter {
       double angle, Color backgroundColor) {
     const iconSize = 20.0;
     final double radius =
-        size.width / 4.0; // Position the icon within each petal
-    const double backgroundRadius = 20.0; // Radius for the background circle
+        size.width / 4.0; 
+    const double backgroundRadius = 20.0; 
 
-    // Calculate icon position based on angle
+    
     final x = size.width / 2 + radius * cos(degreeToRadians(angle));
     final y = size.height / 2 + radius * sin(degreeToRadians(angle));
 
-    // Draw the circular background
+    
+    Paint borderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0;
+    canvas.drawCircle(Offset(x, y), 18, borderPaint);
+
     Paint backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(x, y), backgroundRadius, backgroundPaint);
 
-    // Draw the icon
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: String.fromCharCode(icon.codePoint),
         style: TextStyle(
           fontSize: iconSize,
           fontFamily: icon.fontFamily,
-          color: Colors.black, // Color for the icon
+          color: Colors.black, 
         ),
       ),
       textDirection: TextDirection.ltr,
