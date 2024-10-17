@@ -2,6 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class FlowerPieChartPainter extends CustomPainter {
+  // final Color? iconColor;
+  final int? index;
+  FlowerPieChartPainter(
+      {
+      // this.iconColor,
+      this.index});
   @override
   void paint(Canvas canvas, Size size) {
     Paint petalPaint = Paint()
@@ -15,14 +21,52 @@ class FlowerPieChartPainter extends CustomPainter {
     }
 
     drawCenterPentagon(canvas, size);
-
-    for (double angle in angles) {
-      _drawIconInPetalWithBackground(
-          canvas, size, Icons.alarm, angle, Colors.grey.shade300);
+    // Icon details for each petal (icon, color)
+    List<Map<String, dynamic>> iconDetails = [
+      {
+        'icon': Icons.alarm,
+        'color': const Color.fromRGBO(255, 122, 89, 1)
+      }, // Left
+      {
+        'icon': Icons.spa,
+        'color': const Color.fromRGBO(234, 122, 251, 1)
+      }, // Right
+      {'icon': Icons.favorite, 'color': Colors.purple.shade300}, // Bottom-right
+      {
+        'icon': Icons.self_improvement,
+        'color': const Color.fromRGBO(56, 164, 231, 1)
+      }, // Top
+      {'icon': Icons.timer, 'color': Colors.orange.shade400}, // Bottom-left
+    ];
+    if (index == null) {
+      for (int i = 0; i < angles.length; i++) {
+        _drawIconInPetalWithBackground(
+          canvas,
+          size,
+          iconDetails[i]['icon'],
+          angles[i],
+          iconDetails[i]['color'],
+        );
+      }
+    } else {
+      for (int i = 0; i < angles.length; i++) {
+        _drawIconInPetalWithBackground(
+          canvas,
+          size,
+          iconDetails[i]['icon'],
+          angles[i],
+          index == i ? iconDetails[i]['color'] : Colors.grey.shade300,
+        );
+      }
     }
 
-    _drawIconInPetalWithBackground(
-        canvas, size, Icons.alarm, 198, Colors.orange);
+    // for (double angle in angles) {
+    //   _drawIconInPetalWithBackground(
+    //       canvas, size, Icons.alarm, angle, Colors.grey.shade300);
+    // }
+
+    // _drawIconInPetalWithBackground(
+    //     canvas, size, Icons.alarm, 198, Colors.orange);
 
     drawCenterText(canvas, size);
     drawStatusBox(canvas, size);
@@ -127,7 +171,7 @@ class FlowerPieChartPainter extends CustomPainter {
   void _drawIconInPetalWithBackground(Canvas canvas, Size size, IconData icon,
       double angle, Color backgroundColor) {
     const iconSize = 20.0;
-    final double radius = size.width / 4.0;
+    final double radius = size.width / 6.0;
     const double backgroundRadius = 20.0;
 
     final x = size.width / 2 + radius * cos(degreeToRadians(angle));

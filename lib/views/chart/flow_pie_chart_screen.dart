@@ -1,9 +1,27 @@
 import 'package:destion_assesment_osman/views/chart/pie_chart.dart';
 import 'package:flutter/material.dart';
 
-class FlowerPieChartScreen extends StatelessWidget {
+class FlowerPieChartScreen extends StatefulWidget {
   const FlowerPieChartScreen({super.key});
 
+  @override
+  State<FlowerPieChartScreen> createState() => _FlowerPieChartScreenState();
+}
+
+class _FlowerPieChartScreenState extends State<FlowerPieChartScreen> {
+  int? index;
+  Map<String, String> wellnesses = {
+    "physical":
+        "includes activities like walking, stretching, or light exercises to boost your mobility and strength.",
+    "mental":
+        "involves puzzles, learning tasks, or reflective activities to stimulate cognitive health and mental agility.",
+    "emotional":
+        "involves puzzles, learning tasks, or reflective activities to stimulate cognitive health and mental agility.",
+    "social":
+        "involves puzzles, learning tasks, or reflective activities to stimulate cognitive health and mental agility.",
+    "spirtual":
+        "involves puzzles, learning tasks, or reflective activities to stimulate cognitive health and mental agility.",
+  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,10 +71,15 @@ class FlowerPieChartScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomPaint(
-                size: const Size(400, 400),
-                painter: FlowerPieChartPainter(),
-              ),
+              index == null
+                  ? CustomPaint(
+                      size: const Size(400, 400),
+                      painter: FlowerPieChartPainter(),
+                    )
+                  : CustomPaint(
+                      size: const Size(400, 400),
+                      painter: FlowerPieChartPainter(index: index),
+                    ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
@@ -74,21 +97,29 @@ class FlowerPieChartScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: const TextSpan(
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                        children: [
-                          TextSpan(
-                            text: 'The physical dimension ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                    index != null
+                        ? RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                              children: [
+                                TextSpan(
+                                  text:
+                                      'The ${wellnesses.keys.elementAt(index!)} dimension ',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '${wellnesses[wellnesses.keys.elementAt(index!)]}',
+                                ),
+                              ],
+                            ),
+                          )
+                        : const Text(
+                            "Tailor you first daily challenge by selecting favorite missions from the five wellness dimensions.",
+                            style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
-                          TextSpan(
-                            text:
-                                'includes activities like walking, stretching, or light exercises to boost your mobility and strength.',
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 40),
                     const Text(
                       "Click 'Go' to start",
@@ -110,7 +141,15 @@ class FlowerPieChartScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 16),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => setState(() {
+                          if (index == null) {
+                            index = 0;
+                          } else if (index! <= 3) {
+                            index = index! + 1;
+                          } else {
+                            index = null;
+                          }
+                        }),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal,
                           padding: const EdgeInsets.symmetric(
